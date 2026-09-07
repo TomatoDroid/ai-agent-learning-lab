@@ -1,0 +1,26 @@
+Agent 学习实验室 / AI Agent Learning Lab
+Copyright 2026 TomatoDroid
+
+This project is an independent interactive adaptation of:
+《深入理解 AI Agent：设计原理与工程实践》 / Understanding AI Agents
+Author: 李博杰 (Bojie Li)
+Copyright 2025 Bojie Li
+Upstream: https://github.com/bojieli/ai-agent-book
+Upstream license: Apache License, Version 2.0 (see LICENSE)
+
+The included source.pdf is the unmodified v1.4 edition dated 2026-08-13
+(307 PDF pages). Its original author credits and notices are retained.
+
+Changes made in this project:
+- Reorganized the book's core ideas into 12 beginner learning stages.
+- Added Chinese explanations, deterministic browser simulations,
+  24 questions with feedback, reflection prompts and a glossary.
+- Added responsive UI, local learning progress and Markdown notes export.
+
+This is not an official course, and no endorsement by the original author
+is implied. Simulations are educational examples, not reproduced results
+of the book's real model experiments.
+
+原书及 PDF 的版权归李博杰及相应权利人所有。
+互动导读基于 v1.4 改编；上游新版章节结构可能不同。
+本项目保留原作者署名并采用 Apache-2.0 许可。
