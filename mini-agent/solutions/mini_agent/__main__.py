@@ -8,11 +8,13 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime
 
 from . import llm as L
 from .agent import Agent
 from .builtin import add_clock, add_workspace, basic_registry
 from .guard import Guard
+from .memory import MemoryStore, extract_memories
 from .messages import ToolCall, tool_calls_of
 from .status import StatusTracker
 
@@ -50,7 +52,7 @@ def demo() -> None:
     print("每次调用模型时读入的消息条数：", [len(c["messages"]) for c in model.calls])
 
 
-def chat(workspace: str) -> None:
+def chat(workspace: str, memory_path: str | None = None) -> None:
     reg = basic_registry()
     add_clock(reg)
     root = add_workspace(reg, workspace)
@@ -59,9 +61,11 @@ def chat(workspace: str) -> None:
         answer = input(f"\n⚠ 高风险操作 {call.name}({call.arguments})，允许吗？[y/N] ")
         return answer.strip().lower() == "y"
 
-    agent = Agent(L.OpenAICompatLLM.from_env(), reg,
+    llm = L.OpenAICompatLLM.from_env()
+    store = MemoryStore.load(memory_path) if memory_path else None
+    agent = Agent(llm, reg,
                   f"你是一个助手，可以在工作目录 {root} 中读写文件。需要真实数据时调用工具。",
-                  guard=Guard(reg, confirm=confirm, workspace=str(root)), status=StatusTracker(), budget=60000)
+                  guard=Guard(reg, confirm=confirm, workspace=str(root)), status=StatusTracker(), budget=60000, memory=store)
     print(f"工作目录：{root}。输入 exit 退出。")
     while True:
         try:
@@ -77,6 +81,15 @@ def chat(workspace: str) -> None:
         print_trace(result.messages, before)
         if result.stop_reason != "done":
             print(f"（停止原因：{result.stop_reason}）")
+    if store is not None and agent.history:
+        # 3.1：会话结束后，用一次额外的 LLM 调用提炼记忆，只追加写回
+        talk = "\n".join(f"{m['role']}: {m['content']}" for m in agent.history
+                         if m["role"] in ("user", "assistant") and m.get("content"))
+        cards = extract_memories(llm, talk, ts=datetime.now().isoformat(timespec="seconds"), source="chat")
+        for c in cards:
+            store.add(c)
+        store.save(memory_path)
+        print(f"记住了 {len(cards)} 条新信息，写入 {memory_path}。")
 
 
 def main() -> None:
@@ -85,11 +98,12 @@ def main() -> None:
     sub.add_parser("demo", help="离线演示 ReAct 轨迹")
     p = sub.add_parser("chat", help="接入真实模型对话")
     p.add_argument("--workspace", default="workspace")
+    p.add_argument("--memory", help="用户记忆文件（JSON Lines），会话结束时追加新记忆")
     args = parser.parse_args()
     if args.cmd == "demo":
         demo()
     else:
-        chat(args.workspace)
+        chat(args.workspace, args.memory)
 
 
 if __name__ == "__main__":

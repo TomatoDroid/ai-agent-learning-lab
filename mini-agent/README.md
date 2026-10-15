@@ -38,8 +38,11 @@ python -m pytest -q               # 一开始全部失败：每个失败都是�
 | [2.2](../course/02-context/2.2-kv-cache.md) | `context.py` | 2.2：前缀缓存计量、上下文体检 | `pytest tests/test_ch02_cache.py` |
 | [2.3](../course/02-context/2.3-prompt-and-injection.md) | `injection.py` | 2.3：来源标记、注入扫描 | `pytest tests/test_ch02_injection.py` |
 | [2.4](../course/02-context/2.4-skills-status-compression.md) | `status.py`、`compress.py`、`skills.py` | 2.4a/b/c：状态栏、阈值压缩、Skills | `pytest tests/test_ch02_status_compress_skills.py` |
+| [3.1](../course/03-memory/3.1-user-memory.md) | `memory.py` | 3.1a/b/c：只追加的记忆卡片、记忆提取与校验、日志脱敏 | `pytest tests/test_ch03_memory.py` |
+| [3.2](../course/03-memory/3.2-rag-basics.md) | `retrieval.py` | 3.2a/b/c/d：分块、BM25、RRF 融合、评测指标 | `pytest tests/test_ch03_retrieval.py` |
+| [3.3](../course/03-memory/3.3-agentic-rag.md) | `knowledge.py` | 3.3a/b/c：上下文前缀、检索层过滤、检索工具 | `pytest tests/test_ch03_knowledge.py` |
 
-后续模块（记忆、工具、Coding Agent、评估……）会继续往这里加文件。
+后续模块（工具、Coding Agent、评估……）会继续往这里加文件。
 
 ## 离线演示
 
@@ -62,6 +65,7 @@ python -m mini_agent chat --workspace ./workspace
 ```
 
 `chat` 模式会装配你写好的全部零件：工作目录内的文件工具、护栏（高风险操作在终端里问你）、状态栏和压缩。
+加上 `--memory memory.jsonl` 后，会话开始时载入用户记忆，退出时提炼新记忆并追加写回（3.1 课）。
 模型名和地址以服务商文档为准；选型建议见原书第一章“如何选择模型”。
 
 ## 设计约定

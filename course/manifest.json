@@ -34,9 +34,9 @@
     {
       "id": "03", "part": "第一部分 · 构建", "title": "模块 3 · 用户记忆和知识库", "page": "course/03-memory/README.md",
       "lessons": [
-        { "id": "3.1", "title": "用户记忆", "status": "outline" },
-        { "id": "3.2", "title": "RAG 基础：分块、稠密、稀疏、混合检索", "status": "outline" },
-        { "id": "3.3", "title": "超越扁平文本与 Agentic RAG", "status": "outline" }
+        { "id": "3.1", "title": "用户记忆", "file": "course/03-memory/3.1-user-memory.md", "minutes": 100, "status": "ready" },
+        { "id": "3.2", "title": "RAG 基础：分块、稀疏、稠密与混合检索", "file": "course/03-memory/3.2-rag-basics.md", "minutes": 100, "status": "ready" },
+        { "id": "3.3", "title": "超越扁平文本与 Agentic RAG", "file": "course/03-memory/3.3-agentic-rag.md", "minutes": 110, "status": "ready" }
       ]
     },
     {
