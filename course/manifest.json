@@ -42,8 +42,9 @@
     {
       "id": "04", "part": "第一部分 · 构建", "title": "模块 4 · 工具", "page": "course/04-tools/README.md",
       "lessons": [
-        { "id": "4.1", "title": "工具设计的通用原则", "status": "outline" },
-        { "id": "4.2", "title": "MCP 与主动工具发现", "status": "outline" }
+        { "id": "4.1", "title": "工具设计的通用原则", "file": "course/04-tools/4.1-tool-design.md", "minutes": 100, "status": "ready" },
+        { "id": "4.2", "title": "MCP、Skill Hub 与工具发现", "file": "course/04-tools/4.2-mcp-and-discovery.md", "minutes": 100, "status": "ready" },
+        { "id": "4.3", "title": "感知、执行与协作工具", "file": "course/04-tools/4.3-perception-execution-collab.md", "minutes": 110, "status": "ready" }
       ]
     },
     {

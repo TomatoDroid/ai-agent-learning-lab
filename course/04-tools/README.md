@@ -2,30 +2,18 @@
 
 对应原书：[第四章 工具](https://github.com/bojieli/ai-agent-book/blob/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/book/chapter4.md) · 原书配套实验：[chapter4/](https://github.com/bojieli/ai-agent-book/tree/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4)
 
-> **本模块正在编写中。** 下面是课程大纲：你现在就可以按“精读”一栏读原书，按“读完应该能回答”自测。完整的课（动画、练习和测试）会在后续版本补上。
+工具决定 Agent 的能力上限。这一章回答五个问题：能力做成什么形态、工具怎么描述、参数如何忠实传递、工具多了以后一次让模型看见多少，以及感知、执行、协作三类工具各自的坑。学完这一模块，mini-agent 会多出一个 MCP 服务器、一个工具搜索元工具、一个忠实的 `edit_file`，以及一个只看结构化字段的 Sidecar 门卫。
 
-工具决定了 Agent 的动作空间。2.3 课说过“去掉工具描述，错误率 +45%”；这一章系统回答：工具怎么分类、怎么设计、多了怎么办，以及感知、执行、协作三类工具各自的坑。
+| 课 | 精读 | 动手 | 时长 |
+| --- | --- | --- | --- |
+| [4.1 工具设计的通用原则](4.1-tool-design.md) | 开头至 §工具设计的通用原则 | 练习 4.1：描述检查、参数校验、忠实的编辑工具 | 约 100 分钟 |
+| [4.2 MCP、Skill Hub 与工具发现](4.2-mcp-and-discovery.md) | §工具生态；§工具太多怎么办 | 练习 4.2：MCP 服务器、第三方审计、工具搜索 | 约 100 分钟 |
+| [4.3 感知、执行与协作工具](4.3-perception-execution-collab.md) | §感知工具 至章末 | 练习 4.3：显式截断、Sidecar、先查询再重试 | 约 110 分钟 |
 
-| 课 | 精读 | 计划的动手 |
-| --- | --- | --- |
-| 4.1 工具设计的通用原则 | §工具的分类；§工具设计的通用原则；§感知工具；§执行工具；§协作工具 | 重写 mini-agent 的工具描述（使用边界、示例、协作关系），用消融测试对比前后 |
-| 4.2 MCP 与主动工具发现 | §工具生态：MCP 与 Skill Hub；§工具太多怎么办 | 把 mini-agent 的工具暴露为 MCP server；实现按需加载的工具目录（呼应 2.3 的工具搜索） |
+学完后你应该能：
 
-## 原书配套实验（推荐）
-
-| 实验 | 内容 |
-| --- | --- |
-| [实验 4-1](https://github.com/bojieli/ai-agent-book/tree/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4/active-tool-discovery) | 主动工具发现 |
-| [实验 4-2](https://github.com/bojieli/ai-agent-book/tree/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4/perception-tools) | 感知工具 MCP 服务器 |
-| [实验 4-4](https://github.com/bojieli/ai-agent-book/tree/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4/execution-tools) | 执行工具 MCP 服务器 |
-| [实验 4-5](https://github.com/bojieli/ai-agent-book/tree/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4/collaboration-tools) | 协作工具 MCP 服务器 |
-
-完整实验列表见原书 [chapter4/README.md](https://github.com/bojieli/ai-agent-book/blob/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/chapter4/README.md)。先预测结果，再运行。
-
-## 读完应该能回答
-
-1. 专用工具、通用执行器和 Skill 各适合什么场景？
-2. 工具太多时，按需加载如何同时照顾缓存和准确率？
-3. 执行工具为什么要区分风险等级（回看 1.3 的 assess_risk）？
-
-原书第4章末尾的思考题与[参考答案](https://github.com/bojieli/ai-agent-book/blob/dbc046eb896ac4e39aa19c7774c8bf49583b89a6/book/reference-answers.md)同样适用。
+- 为一项能力选择形态（专用工具、Skill + 通用执行器），并说出四个决策维度；
+- 写出一条让模型选得对、传得对的工具描述，并解释参数保真为什么比“智能修正”重要；
+- 讲清 MCP 的握手与调用流程，审计第三方服务器的三类风险；
+- 解释主动工具发现为什么既省 token 又不破坏 KV Cache；
+- 为执行工具设计多层防护：输入验证、权限、提议者-审核者、Sidecar、沙盒，以及超时后的安全重试。

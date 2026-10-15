@@ -10,8 +10,10 @@ import datetime as _dt
 import operator
 from pathlib import Path
 
+from .execution import read_window, verify_python
 from .guard import path_escapes_workspace
 from .tools import Tool, ToolRegistry
+from .tooldesign import apply_edit
 
 # 固定汇率，保证演示可复现（原书第一章多币种汇总例子的数值）
 RATES_TO_USD = {"USD": 1.0, "EUR": 2282608.7 / 2100000, "GBP": 2278481.01 / 1800000, "JPY": 2541806.02 / 380000000, "CNY": 0.14}
@@ -62,7 +64,7 @@ def add_clock(reg: ToolRegistry, clock=None) -> None:
 
 
 def add_workspace(reg: ToolRegistry, workspace: str | Path) -> Path:
-    """注册 list_dir / read_file / write_file / delete_file，全部限制在 workspace 内。"""
+    """注册 list_dir / read_file / write_file / edit_file / delete_file，全部限制在 workspace 内。"""
     root = Path(workspace).resolve()
     root.mkdir(parents=True, exist_ok=True)
 
@@ -75,26 +77,61 @@ def add_workspace(reg: ToolRegistry, workspace: str | Path) -> Path:
         p = inside(path)
         return "\n".join(sorted(x.name + ("/" if x.is_dir() else "") for x in p.iterdir())) or "(空目录)"
 
-    def read_file(path: str) -> str:
-        return inside(path).read_text(encoding="utf-8")
+    def read_file(path: str, offset: int = 1, limit: int = 200) -> str:
+        text = inside(path).read_text(encoding="utf-8")
+        try:
+            return read_window(text, offset, limit)
+        except NotImplementedError:  # 练习 4.3a 还没做时，先退回整文件读取，不影响前面的模块
+            return text
 
     def write_file(path: str, content: str) -> str:
         p = inside(path)
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(content, encoding="utf-8")
-        return f"wrote {len(content)} chars to {path}"
+        note = f"; {verify_python(content)}" if path.endswith(".py") else ""  # 4.3：执行-验证-反馈
+        return f"wrote {len(content)} chars to {path}{note}"
+
+    def edit_file(path: str, old_string: str, new_string: str, replace_all: bool = False) -> str:
+        p = inside(path)
+        text, n = apply_edit(p.read_text(encoding="utf-8"), old_string, new_string, replace_all)
+        p.write_text(text, encoding="utf-8")
+        note = f"; {verify_python(text)}" if path.endswith(".py") else ""
+        return f"replaced {n} occurrence(s) in {path}{note}"
 
     def delete_file(path: str) -> str:
         inside(path).unlink()
         return f"deleted {path}"
 
-    obj = {"type": "object", "properties": {"path": {"type": "string", "description": "相对工作目录的路径"}}, "required": ["path"]}
-    reg.register(Tool("list_dir", "List files in a workspace directory.", {"type": "object", "properties": {"path": {"type": "string"}}}, list_dir))
-    reg.register(Tool("read_file", "Read a UTF-8 text file in the workspace.", obj, read_file))
-    reg.register(Tool("write_file", "Create or overwrite a text file in the workspace.",
-                      {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}, "required": ["path", "content"]},
-                      write_file, risk="medium"))
-    reg.register(Tool("delete_file", "Delete a file in the workspace. Irreversible.", obj, delete_file, risk="high"))
+    # 4.1：描述写清什么时候用、边界、示例、返回值（tooldesign.lint_description 全部通过）
+    path = {"type": "string", "description": "path relative to the workspace, e.g. 'notes/todo.md'"}
+    reg.register(Tool("list_dir", "Use this to see which files exist in a workspace directory. Returns one name per line, "
+                      "directories end with '/'. Only lists the workspace; it cannot read file contents.",
+                      {"type": "object", "properties": {"path": {"type": "string", "description": "directory relative to the workspace, e.g. '.' or 'src'"}}},
+                      list_dir))
+    reg.register(Tool("read_file", "Use this to read a UTF-8 text file in the workspace. Returns numbered lines; long files come in "
+                      "windows of `limit` lines with a note on how to read the rest. Cannot read binary files or paths outside the workspace.",
+                      {"type": "object", "properties": {
+                          "path": path,
+                          "offset": {"type": "integer", "description": "first line to read, starting at 1, e.g. 201 for the second window"},
+                          "limit": {"type": "integer", "description": "maximum number of lines, e.g. 200"}},
+                       "required": ["path"]}, read_file))
+    reg.register(Tool("write_file", "Use this to create a new file or completely overwrite one. To change part of an existing file, "
+                      "use edit_file instead. Returns the number of characters written, plus a syntax check for .py files.",
+                      {"type": "object", "properties": {"path": path, "content": {"type": "string", "description": "the full new content of the file"}},
+                       "required": ["path", "content"]}, write_file, risk="medium"))
+    reg.register(Tool("edit_file", "Use this to change part of an existing file by exact string replacement. old_string must match the file "
+                      "character for character (quotes, spaces, indentation) and must be unique unless replace_all is true; "
+                      "copy it from read_file output without the line-number prefix. Returns the number of replacements, "
+                      "or an error that points at the closest line and the first differing character.",
+                      {"type": "object", "properties": {
+                          "path": path,
+                          "old_string": {"type": "string", "description": "exact text to replace, e.g. 'return a + b'"},
+                          "new_string": {"type": "string", "description": "replacement text"},
+                          "replace_all": {"type": "boolean", "description": "replace every occurrence, e.g. when renaming a variable"}},
+                       "required": ["path", "old_string", "new_string"]}, edit_file, risk="medium"))
+    reg.register(Tool("delete_file", "Use this only when the user asked to remove a file. Irreversible: there is no undo and no trash. "
+                      "Deletes a single file, never a directory. Returns the deleted path.",
+                      {"type": "object", "properties": {"path": path}, "required": ["path"]}, delete_file, risk="high"))
     return root
 
 

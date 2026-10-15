@@ -16,6 +16,10 @@ class UnknownToolError(KeyError):
     pass
 
 
+class ToolNotLoadedError(UnknownToolError):
+    """工具存在，但还没有通过工具搜索加载（4.2 课）。"""
+
+
 @dataclass
 class Tool:
     name: str
@@ -35,6 +39,10 @@ class Tool:
 @dataclass
 class ToolRegistry:
     tools: dict[str, Tool] = field(default_factory=dict)
+    # 4.2：延迟加载的工具。它们已注册，但永远不进 schemas()（静态前缀）；
+    # 被工具搜索加载后进入 loaded，才能调用，定义则留在轨迹里那次搜索结果的位置。
+    deferred: set[str] = field(default_factory=set)
+    loaded: set[str] = field(default_factory=set)
 
     def register(self, tool: Tool) -> Tool:
         self.tools[tool.name] = tool
@@ -50,11 +58,13 @@ class ToolRegistry:
     def get(self, name: str) -> Tool:
         if name not in self.tools:
             raise UnknownToolError(name)
+        if name in self.deferred and name not in self.loaded:
+            raise ToolNotLoadedError(f"{name} is not loaded yet; call search_tools to find and load it")
         return self.tools[name]
 
     def schemas(self) -> list[dict]:
         # 顺序固定为注册顺序：工具定义是静态前缀的一部分，顺序一变缓存就失效（2.2 课）
-        return [t.schema() for t in self.tools.values()]
+        return [t.schema() for t in self.tools.values() if t.name not in self.deferred]
 
     def execute(self, call: ToolCall) -> str:
         """执行一次工具调用并把结果转成字符串。
