@@ -1,26 +1,37 @@
-# Agent 学习实验室 📖
+# 深入理解 AI Agent · 实践课
 
-通过 **12 个递进关卡、12 个互动实验、24 道反馈测验**，理解 AI Agent 的核心概念。
+跟着李博杰《深入理解 AI Agent：设计原理与工程实践》**v2.0** 逐章精读，用动画看懂机制，再在自己的 Agent 里把每条原则写成代码、用测试验证。
 
-**[在线开始学习](https://tomatodroid.github.io/ai-agent-learning-lab/)** · [原书开源项目](https://github.com/bojieli/ai-agent-book) · [原书 v1.4 PDF](source.pdf)
+**[在线开始学习](https://tomatodroid.github.io/ai-agent-learning-lab/)** · [原书开源项目](https://github.com/bojieli/ai-agent-book) · [课程首页（Markdown）](course/README.md)
 
-基于李博杰《深入理解 AI Agent：设计原理与工程实践》v1.4（2026-08-13）改编。这是一份独立互动导读，并非作者官方课程。
+这是一份独立的学习课程，并非作者官方课程。它不替代原书：每节课都会告诉你读原书的哪几节，然后帮你把读到的东西拆开、看动画、动手实现、闭卷检验。
 
-## 怎么学
+## 每节课怎么学
 
-每关按 **理解概念 → 动手实验 → 检验理解** 推进。完成实验、答对两题后计为已掌握；答错可以查看解释并重试，目录允许自由预习和复习。
+| 环节 | 做什么 |
+| --- | --- |
+| 读前复习 / 读前问题 | 带着问题去读 |
+| 精读 | 按给出的范围读原书（链接固定在上游的同一个版本） |
+| 拆解 | 关键机制的逐步动画、表格和推理链 |
+| 动手 | 在 `mini-agent` 中完成练习，跑测试验收；或先预测、再运行原书实验 |
+| 检验 | 先闭卷回答，再展开对照 |
+| 原书思考题 / 复盘卡 | 连接原书思考题，一张卡片收束本课 |
 
-- 起步：Agent 三个组件、ReAct 反馈循环、上下文管理。
-- 构建：工具与安全、记忆与 RAG、Coding Agent、评估、Harness 与工作流。
-- 进阶：持续进化、SFT/RL、多模态、多 Agent 协作。
+主线项目 [`mini-agent`](mini-agent/README.md) 是一个纯 Python、零依赖的小型 Agent。每章给它加一块书里讲的能力，测试使用剧本化的模型，**不需要 API Key**；想接真实模型时，配好兼容 OpenAI 的接口即可。
 
-支持手机浏览、术语搜索、原书页码跳转、进度自动保存、学习笔记和 Markdown 导出。
+## 当前进度
 
-所有实验均为确定性的浏览器教学模拟，无需 API Key，不调用真实模型、天气或企业系统，也不执行用户输入的任意代码。导读覆盖原书 10 章的核心概念，不包含全部数学推导及高级实验。
+| 模块 | 对应原书 | 状态 |
+| --- | --- | --- |
+| 0 开学 | 引言 | 完成（2 节，1 个动画） |
+| 1 Agent 入门 | 第一章 | 完成（3 节，5 个动画，练习 1.2、1.3） |
+| 2 上下文工程 | 第二章 | 完成（4 节，7 个动画，练习 2.1–2.4） |
+| 3–10 | 第三至十章 | 大纲：精读范围、计划练习、推荐实验、自测题 |
+| 结业 | 后记 | 大纲 |
 
 ## 本地运行
 
-直接用浏览器打开 `index.html`，或：
+课程网站是无构建步骤的静态页面，课文用 `fetch` 读取，所以需要通过 HTTP 访问：
 
 ```sh
 git clone https://github.com/TomatoDroid/ai-agent-learning-lab.git
@@ -28,51 +39,42 @@ cd ai-agent-learning-lab
 python3 -m http.server 5186 --bind 127.0.0.1
 ```
 
-访问 [http://localhost:5186/](http://localhost:5186/)。无安装、构建或外部服务依赖。
+访问 [http://localhost:5186/](http://localhost:5186/)。学习进度只保存在当前浏览器的 localStorage 中。
 
-进度与笔记仅保存在当前浏览器的 localStorage 中。不同域名、浏览器、设备之间不会同步；清理浏览器数据会清除它们。重要笔记请导出保存。
+做练习：
+
+```sh
+cd mini-agent
+python -m pip install pytest
+python -m pytest tests/test_ch01_loop.py -v   # 每节课会告诉你跑哪个文件
+python -m mini_agent demo                     # 离线演示
+```
 
 ## 部署到 GitHub Pages
 
-本仓库通过 GitHub Pages 的分支发布模式部署，无需自定义工作流。
+Settings → Pages → Deploy from a branch，选择 **codex/publish** 分支的 **/ (root)**。`.nojekyll` 让站点按普通静态文件发布，全部资源使用相对路径。
 
-1. 打开仓库 **Settings → Pages**。
-2. Source 选择 **Deploy from a branch**。
-3. Branch 选择 **codex/publish**，目录选择 **/ (root)**。
-4. 保存后等待 Pages 构建完成。之后推送到该分支会自动更新网站。
+## 仓库结构
 
-`.nojekyll` 使站点按普通静态文件发布，全部资源使用相对路径，支持 GitHub 项目子路径。Fork 后请将 README 与页面底部的仓库地址改为自己的地址。
-
-## 文件结构
-
-| 文件 | 内容 |
+| 路径 | 内容 |
 | --- | --- |
-| `index.html` | 应用结构与导航 |
-| `content.js` | 课程内容、原文页码、24 道测验、术语 |
-| `labs.js` | 12 个本地互动实验 |
-| `app.js` | 学习进度、测验、笔记、搜索、导出 |
-| `style.css` | 桌面与手机布局、键盘焦点样式 |
-| `source.pdf` | 未修改的原书 v1.4 PDF |
-| `LICENSE` / `NOTICE` | 开源许可、原作者署名与改编说明 |
+| `index.html`、`assets/` | 课程网站：路由与渲染（`app.js`）、样式、动画框架与各章动画（`assets/anim/`）、marked |
+| `course/` | 课文（Markdown，在 GitHub 上也能直接读）与 `manifest.json` 目录 |
+| `mini-agent/` | 主线项目：练习版、参考答案（`solutions/`）、测试与练习生成脚本 |
 
-原书印刷页码与 PDF 页码相差 8 页，网页链接已加偏移。部分 PDF 阅读器可能忽略页码锚点，可按标示页码手动定位。导读锁定 v1.4，上游新版目录可能不同。
+## 参与修改
 
-## 修改与检查
-
-修改课程请同时核对原书章节、答案解释、页码和对应实验。提交前运行：
+- 改课文：编辑 `course/` 下的 Markdown。动画用 `<div class="anim" data-anim="名称">后备文字</div>` 嵌入。
+- 改练习：只改 `mini-agent/solutions/`，再运行 `python tools/make_exercises.py` 重新生成练习版。
+- 提交前检查：
 
 ```sh
-node --check app.js
-node --check content.js
-node --check labs.js
+cd mini-agent
+MINI_AGENT_TARGET=solutions python -m pytest -q   # 参考答案全部通过
+python tools/make_exercises.py --check            # 练习版与参考答案同步
+cd .. && for f in assets/*.js assets/anim/*.js; do node --check "$f"; done
 ```
-
-并在浏览器验证受影响关卡、错误重试、刷新恢复与移动端布局。现有版本已手动验证完整 12 关和 24 道测验、术语搜索、笔记下载及桌面/手机布局。
-
-欢迎通过 Issues 报告错字、交互问题或教学建议，通过 Pull Requests 改进内容。
 
 ## 许可与致谢
 
-采用 [Apache License 2.0](LICENSE)。原书 Copyright 2025 Bojie Li；网页与互动改编 Copyright 2026 TomatoDroid。
-
-原书作者为 **李博杰**；原始项目：[bojieli/ai-agent-book](https://github.com/bojieli/ai-agent-book)。本项目保留原文 PDF 的署名，将其核心思想重排为入门关卡，并新增模拟实验、讲解、测验和界面。完整声明见 [NOTICE](NOTICE)。
+采用 [Apache License 2.0](LICENSE)。原书作者为 **李博杰**，原始项目 [bojieli/ai-agent-book](https://github.com/bojieli/ai-agent-book)，Copyright 2025 Bojie Li。课程与代码 Copyright 2026 TomatoDroid。完整声明见 [NOTICE](NOTICE)。

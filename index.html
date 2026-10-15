@@ -1,27 +1,32 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="《深入理解 AI Agent》互动导读：12 个递进关卡，动手实验、即时反馈与本地学习笔记。">
-<title>Agent 学习实验室 · 深入理解 AI Agent</title>
-<link rel="stylesheet" href="style.css">
-<script defer src="content.js"></script><script defer src="labs.js"></script><script defer src="app.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>深入理解 AI Agent · 实践课</title>
+  <meta name="description" content="基于李博杰《深入理解 AI Agent：设计原理与工程实践》2.0 的精读 + 动画 + 动手课程。">
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<a class="skip" href="#lesson">跳到课程内容</a>
-<aside id="sidebar" aria-label="学习路径">
-<a class="brand" href="./index.html"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 5v15M12 6C9 4 6 4 3 5v13c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1Z"/></svg></span><span>Agent 学习实验室<small>深入理解 AI Agent · 互动导读</small></span></a>
-<div class="progress-head"><span>你的学习进度</span><strong id="progress-count">0 / 12</strong></div>
-<progress id="progress" max="12" value="0" aria-label="已掌握关卡"></progress>
-<nav id="lesson-nav" aria-label="课程关卡"></nav>
-<div class="sidebar-bottom"><p>一读 · 一试 · 一次真正理解</p><a href="https://github.com/TomatoDroid/ai-agent-learning-lab" target="_blank" rel="noopener">GitHub 开源仓库 ↗</a></div>
-</aside>
-<div class="workspace">
-<header class="topbar"><div class="breadcrumb"><button id="menu" class="plain mobile-only" aria-expanded="false" aria-controls="sidebar">☰ 目录</button><span>学习路径 <span class="slash">/</span> <span id="group">起步</span></span></div><div class="header-actions"><button class="plain" id="glossary-open">术语手册</button><button class="plain" id="notes-open">学习笔记 <span class="note-dot"></span></button></div></header>
-<main id="lesson" tabindex="-1"></main>
-<footer class="site-footer"><span>基于李博杰《深入理解 AI Agent》v1.4 · 2026.08.13</span><button id="about-open" class="plain">关于这份导读</button></footer>
-</div>
-<dialog id="drawer"><div class="dialog-head"><h2 id="dialog-title"></h2><button id="dialog-close" class="plain" aria-label="关闭弹窗">✕</button></div><div id="dialog-content"></div></dialog>
-<div id="toast" role="status"></div>
-<noscript>请启用 JavaScript，以使用动手实验、测验与学习进度功能。</noscript>
-</body></html>
+  <a class="skip" href="#main">跳到正文</a>
+  <header class="topbar">
+    <button class="icon-btn" id="nav-toggle" aria-label="打开目录" aria-expanded="false">☰</button>
+    <a class="brand" href="#/">深入理解 AI Agent · 实践课</a>
+    <span class="progress-pill" id="progress-pill" title="已完成课时">0 / 0</span>
+    <button class="icon-btn" id="theme-toggle" aria-label="切换深浅色">◐</button>
+  </header>
+  <div class="layout">
+    <nav class="sidebar" id="sidebar" aria-label="课程目录"></nav>
+    <main id="main" tabindex="-1">
+      <article class="lesson" id="lesson"><p class="muted">加载中…</p></article>
+      <footer class="lesson-footer" id="lesson-footer"></footer>
+    </main>
+  </div>
+  <noscript><p class="noscript">课程网站需要 JavaScript。也可以直接在 GitHub 上阅读 <code>course/</code> 目录中的 Markdown 课文。</p></noscript>
+  <script src="assets/vendor/marked.umd.js"></script>
+  <script src="assets/anim/core.js"></script>
+  <script src="assets/anim/ch00-01.js"></script>
+  <script src="assets/anim/ch02.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
