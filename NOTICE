@@ -1,26 +1,32 @@
-Agent 学习实验室 / AI Agent Learning Lab
+深入理解 AI Agent · 实践课 / Understanding AI Agents: A Hands-on Course
 Copyright 2026 TomatoDroid
 
-This project is an independent interactive adaptation of:
+This project is an independent study course built on:
 《深入理解 AI Agent：设计原理与工程实践》 / Understanding AI Agents
 Author: 李博杰 (Bojie Li)
 Copyright 2025 Bojie Li
 Upstream: https://github.com/bojieli/ai-agent-book
 Upstream license: Apache License, Version 2.0 (see LICENSE)
 
-The included source.pdf is the unmodified v1.4 edition dated 2026-08-13
-(307 PDF pages). Its original author credits and notices are retained.
+The course follows the book's v2.0 edition. All links to the book and its
+experiments are pinned to upstream commit
+dbc046eb896ac4e39aa19c7774c8bf49583b89a6.
+The book text itself is not redistributed here; earlier versions of this
+repository bundled a v1.4 PDF (source.pdf), which has been removed.
 
 Changes made in this project:
-- Reorganized the book's core ideas into 12 beginner learning stages.
-- Added Chinese explanations, deterministic browser simulations,
-  24 questions with feedback, reflection prompts and a glossary.
-- Added responsive UI, local learning progress and Markdown notes export.
+- Reorganized the book into modules and lessons with reading ranges,
+  breakdowns, self-check questions and review cards, written in Chinese.
+- Added step-by-step browser animations of the book's mechanisms.
+  Animations are teaching illustrations; numbers taken from the book are
+  cited, other values are illustrative, and none are reproduced results of
+  the book's experiments.
+- Added mini-agent, a small Python agent with exercises and tests that
+  implement the book's principles.
+
+Third-party software:
+- marked 15.0.12 (assets/vendor/marked.umd.js), MIT License,
+  see assets/vendor/marked.LICENSE.md.
 
 This is not an official course, and no endorsement by the original author
-is implied. Simulations are educational examples, not reproduced results
-of the book's real model experiments.
-
-原书及 PDF 的版权归李博杰及相应权利人所有。
-互动导读基于 v1.4 改编；上游新版章节结构可能不同。
-本项目保留原作者署名并采用 Apache-2.0 许可。
+is implied.
