@@ -2,6 +2,7 @@
 
 装配顺序就是第二章的上下文布局：
   [system：系统提示词 + 用户记忆 + Skill 目录] [tools] [轨迹……] [状态栏（追加）]
+工具进入 Agent 前会套两层：外部输出加来源标记（2.3），参数先校验（4.1）。
 每次调用模型前，before_call 依次：记录工具调用 → 追加已激活的 Skill 正文 → 必要时压缩 → 追加状态栏。
 """
 from __future__ import annotations
@@ -17,6 +18,7 @@ from .loop import AgentResult, run_agent
 from .memory import MemoryStore
 from .skills import activation_message, catalog_text, load_skills
 from .status import StatusTracker
+from .tooldesign import strict
 from .tools import Tool, ToolRegistry
 
 
@@ -35,6 +37,7 @@ class Agent:
         summarize: Callable[[str], str] | None = None,
         wrap_untrusted: bool = True,
         memory: MemoryStore | None = None,
+        validate_args: bool = False,
         max_iterations: int = 20,
     ):
         self.llm = llm
@@ -49,10 +52,13 @@ class Agent:
         self._seen_calls = 0
 
         # 2.3：外部世界来的工具输出，进入上下文前先包上来源标记
-        self.registry = ToolRegistry()
+        # 与原注册表共用 deferred / loaded 集合：工具搜索加载一个工具时，两边同时生效（4.2）
+        self.registry = ToolRegistry(deferred=registry.deferred, loaded=registry.loaded)
         for tool in registry.tools.values():
             if wrap_untrusted and tool.untrusted_output:
                 tool = replace(tool, fn=_wrapped(tool))
+            if validate_args:  # 4.1：参数先校验，不合法就快速失败，绝不悄悄修正（chat 命令默认打开）
+                tool = strict(tool)
             self.registry.register(tool)
 
         # 2.4：Skill 目录放进系统提示词（静态前缀），正文由 load_skill 按需追加

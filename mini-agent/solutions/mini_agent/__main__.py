@@ -2,6 +2,7 @@
 
   python -m mini_agent demo        离线演示：原书第一章的多币种汇总轨迹（不需要 API Key）
   python -m mini_agent chat        用真实模型对话（需要 MINI_AGENT_BASE_URL / _API_KEY / _MODEL）
+  python -m mini_agent mcp         把工作目录工具作为 MCP 服务器（stdio）暴露给其他客户端
 """
 from __future__ import annotations
 
@@ -14,6 +15,7 @@ from . import llm as L
 from .agent import Agent
 from .builtin import add_clock, add_workspace, basic_registry
 from .guard import Guard
+from .mcp import McpServer, serve_stdio
 from .memory import MemoryStore, extract_memories
 from .messages import ToolCall, tool_calls_of
 from .status import StatusTracker
@@ -65,7 +67,7 @@ def chat(workspace: str, memory_path: str | None = None) -> None:
     store = MemoryStore.load(memory_path) if memory_path else None
     agent = Agent(llm, reg,
                   f"你是一个助手，可以在工作目录 {root} 中读写文件。需要真实数据时调用工具。",
-                  guard=Guard(reg, confirm=confirm, workspace=str(root)), status=StatusTracker(), budget=60000, memory=store)
+                  guard=Guard(reg, confirm=confirm, workspace=str(root)), status=StatusTracker(), budget=60000, memory=store, validate_args=True)
     print(f"工作目录：{root}。输入 exit 退出。")
     while True:
         try:
@@ -92,6 +94,14 @@ def chat(workspace: str, memory_path: str | None = None) -> None:
         print(f"记住了 {len(cards)} 条新信息，写入 {memory_path}。")
 
 
+def mcp(workspace: str) -> None:
+    # 4.2：同一组工具，换一种协议暴露出去。只暴露读写工具，不带 delete_file：服务器端也要守最小权限
+    reg = basic_registry()
+    add_workspace(reg, workspace)
+    del reg.tools["delete_file"]
+    serve_stdio(McpServer(reg))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="python -m mini_agent")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -99,9 +109,13 @@ def main() -> None:
     p = sub.add_parser("chat", help="接入真实模型对话")
     p.add_argument("--workspace", default="workspace")
     p.add_argument("--memory", help="用户记忆文件（JSON Lines），会话结束时追加新记忆")
+    m = sub.add_parser("mcp", help="以 MCP 服务器（stdio）暴露工具")
+    m.add_argument("--workspace", default="workspace")
     args = parser.parse_args()
     if args.cmd == "demo":
         demo()
+    elif args.cmd == "mcp":
+        mcp(args.workspace)
     else:
         chat(args.workspace, args.memory)
 

@@ -41,8 +41,11 @@ python -m pytest -q               # 一开始全部失败：每个失败都是�
 | [3.1](../course/03-memory/3.1-user-memory.md) | `memory.py` | 3.1a/b/c：只追加的记忆卡片、记忆提取与校验、日志脱敏 | `pytest tests/test_ch03_memory.py` |
 | [3.2](../course/03-memory/3.2-rag-basics.md) | `retrieval.py` | 3.2a/b/c/d：分块、BM25、RRF 融合、评测指标 | `pytest tests/test_ch03_retrieval.py` |
 | [3.3](../course/03-memory/3.3-agentic-rag.md) | `knowledge.py` | 3.3a/b/c：上下文前缀、检索层过滤、检索工具 | `pytest tests/test_ch03_knowledge.py` |
+| [4.1](../course/04-tools/4.1-tool-design.md) | `tooldesign.py` | 4.1a/b/c：工具描述检查、参数校验、忠实的编辑工具 | `pytest tests/test_ch04_tooldesign.py` |
+| [4.2](../course/04-tools/4.2-mcp-and-discovery.md) | `mcp.py`、`discovery.py` | 4.2a/b/c：MCP 服务器、第三方服务器审计、工具搜索 | `pytest tests/test_ch04_mcp.py` |
+| [4.3](../course/04-tools/4.3-perception-execution-collab.md) | `execution.py` | 4.3a/b/c：显式截断、Sidecar 门控、先查询再重试 | `pytest tests/test_ch04_execution.py` |
 
-后续模块（工具、Coding Agent、评估……）会继续往这里加文件。
+后续模块（Coding Agent、交互、评估……）会继续往这里加文件。
 
 ## 离线演示
 
@@ -64,8 +67,14 @@ export MINI_AGENT_MODEL=<模型名>                         # 选一个支持工
 python -m mini_agent chat --workspace ./workspace
 ```
 
-`chat` 模式会装配你写好的全部零件：工作目录内的文件工具、护栏（高风险操作在终端里问你）、状态栏和压缩。
+`chat` 模式会装配你写好的全部零件：工作目录内的文件工具、护栏（高风险操作在终端里问你）、状态栏和压缩，以及参数校验（4.1 课）。
 加上 `--memory memory.jsonl` 后，会话开始时载入用户记忆，退出时提炼新记忆并追加写回（3.1 课）。
+
+```sh
+python -m mini_agent mcp --workspace ./workspace
+```
+
+把工作目录工具作为 MCP 服务器（stdio）暴露出去，任何支持 MCP 的客户端都能接入（4.2 课）。
 模型名和地址以服务商文档为准；选型建议见原书第一章“如何选择模型”。
 
 ## 设计约定
@@ -74,6 +83,7 @@ python -m mini_agent chat --workspace ./workspace
 - 轨迹只追加、不改写（第二章“KV Cache”）。
 - 工具错误永远变成给模型的观察，而不是让循环崩溃（第一章“工具结果反馈”）。
 - 高风险操作的确认在**模型上下文之外**完成（第一章“护栏”）。
+- 工具不悄悄修改参数；不合法就快速失败，错误信息要让模型能自己诊断（第四章“参数保真”）。
 
 ## 测试参考答案
 
