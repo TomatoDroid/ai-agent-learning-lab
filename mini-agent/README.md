@@ -51,7 +51,11 @@ python -m pytest -q               # 一开始全部失败：每个失败都是�
 | [6.2](../course/06-interaction/6.2-voice.md) | `voice.py` | 6.2a/b/c：流式分段、首音延迟、快慢思考方案二 | `pytest tests/test_ch06_voice.py` |
 | [6.3](../course/06-interaction/6.3-computer-use-robotics.md) | `gui.py` | 6.3a/b/c：坐标双向缩放、结构化元素索引、机器人逐步检查闭环 | `pytest tests/test_ch06_gui.py` |
 
-后续模块（交互、评估……）会继续往这里加文件。
+| [7.1](../course/07-evaluation/7.1-task-and-success.md) | `evals.py` | 7.1a/b/c：Pass@k 与 Pass^k、分层验证器、每次重置环境的多次试验 | `pytest tests/test_ch07_evals.py` |
+| [7.2](../course/07-evaluation/7.2-datasets-judges-attribution.md) | `judge.py` | 7.2a/b/c：Rubric 加权与否决、交换位置的配对比较与 Elo、前缀回归与第一个错误 | `pytest tests/test_ch07_judge.py` |
+| [7.3](../course/07-evaluation/7.3-selection-significance-iteration.md) | `stats.py` | 7.3a/b/c：置信区间、McNemar 配对检验、护栏优先的 AB 决策；里程碑 B | `pytest tests/test_ch07_stats.py` |
+
+后续模块（后训练、自我进化……）会继续往这里加文件。
 
 ## 离线演示
 
@@ -82,6 +86,14 @@ python -m mini_agent mcp --workspace ./workspace
 ```
 
 把工作目录工具作为 MCP 服务器（stdio）暴露出去，任何支持 MCP 的客户端都能接入（4.2 课）。
+
+```sh
+python -m mini_agent eval --trials 3 --save runs/before.json
+python -m mini_agent compare runs/before.json runs/after.json
+```
+
+`eval` 用真实模型跑内置的订单客服评估集（`MINI_SUITE`），每次试验都重置环境，打印没通过的检查、成功率区间、Pass@k 和 Pass^k（7.1 课）。
+`compare` 把两次结果按（任务，试验）配对，给出 McNemar p 值和 bootstrap 区间（7.3 课，里程碑 B）。
 模型名和地址以服务商文档为准；选型建议见原书第一章“如何选择模型”。
 
 ## 设计约定
@@ -91,6 +103,7 @@ python -m mini_agent mcp --workspace ./workspace
 - 工具错误永远变成给模型的观察，而不是让循环崩溃（第一章“工具结果反馈”）。
 - 高风险操作的确认在**模型上下文之外**完成（第一章“护栏”）。
 - 工具不悄悄修改参数；不合法就快速失败，错误信息要让模型能自己诊断（第四章“参数保真”）。
+- 每次改动都附评估：同样的任务前后各跑一次，配对比较，分差要超过噪声（第七章“统计显著性”）。
 
 ## 测试参考答案
 

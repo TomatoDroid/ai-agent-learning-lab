@@ -66,9 +66,9 @@
     {
       "id": "07", "part": "第二部分 · 提升", "title": "模块 7 · 评估", "page": "course/07-evaluation/README.md",
       "lessons": [
-        { "id": "7.1", "title": "评估任务的解剖与成功的定义", "status": "outline" },
-        { "id": "7.2", "title": "评估环境、数据集与自动评判", "status": "outline" },
-        { "id": "7.3", "title": "统计显著性、可观测性与 AB 测试", "status": "outline" }
+        { "id": "7.1", "title": "评估任务的解剖与成功的定义", "file": "course/07-evaluation/7.1-task-and-success.md", "minutes": 100, "status": "ready" },
+        { "id": "7.2", "title": "数据集、自动评判与失败归因", "file": "course/07-evaluation/7.2-datasets-judges-attribution.md", "minutes": 120, "status": "ready" },
+        { "id": "7.3", "title": "选型、显著性与持续改进", "file": "course/07-evaluation/7.3-selection-significance-iteration.md", "minutes": 120, "status": "ready" }
       ]
     },
     {

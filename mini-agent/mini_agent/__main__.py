@@ -3,6 +3,8 @@
   python -m mini_agent demo        离线演示：原书第一章的多币种汇总轨迹（不需要 API Key）
   python -m mini_agent chat        用真实模型对话（需要 MINI_AGENT_BASE_URL / _API_KEY / _MODEL）
   python -m mini_agent mcp         把工作目录工具作为 MCP 服务器（stdio）暴露给其他客户端
+  python -m mini_agent eval        用真实模型跑内置的订单客服评估集，可保存结果（7.1 课）
+  python -m mini_agent compare A B 对两次 eval 的结果做配对比较（7.3 课，里程碑 B）
 """
 from __future__ import annotations
 
@@ -15,11 +17,13 @@ from . import llm as L
 from .agent import Agent
 from .builtin import add_clock, add_workspace, basic_registry
 from .coding import add_coding_tools
+from .evals import MINI_SUITE, SUITE_SYSTEM_PROMPT, run_suite
 from .guard import Guard
 from .mcp import McpServer, serve_stdio
 from .memory import MemoryStore, extract_memories
 from .messages import ToolCall, tool_calls_of
 from .recovery import ApiError, RetryingLLM, classify
+from .stats import ci95, mcnemar, paired_bootstrap
 from .status import StatusTracker
 
 
@@ -111,6 +115,44 @@ def mcp(workspace: str) -> None:
     serve_stdio(McpServer(reg))
 
 
+def evaluate(trials: int, save: str | None) -> None:
+    llm = L.OpenAICompatLLM.from_env()
+    report = run_suite(lambda reg: Agent(llm, reg, SUITE_SYSTEM_PROMPT, validate_args=True), MINI_SUITE, trials)
+    for t in report.trials:
+        mark = "✓" if t.verdict.passed else "✗"
+        print(f"{mark} {t.task_id:<24} #{t.trial}  调用 {' → '.join(t.tool_calls) or '（无）'}")
+        for f in t.verdict.failures:
+            print(f"{'':>6}{f}")
+    n = len(report.trials)
+    p, lo, hi = ci95(sum(t.verdict.passed for t in report.trials), n)
+    print(f"\n成功率 {p:.0%}（95% 区间 {lo:.0%}–{hi:.0%}，共 {n} 次试验）")
+    for k in sorted({1, trials}):
+        print(f"Pass@{k} = {report.pass_at(k):.0%}    Pass^{k} = {report.pass_hat(k):.0%}")
+    if save:
+        report.save(save)
+        print(f"结果已写入 {save}")
+
+
+def compare(path_a: str, path_b: str) -> None:
+    def load(path):
+        with open(path, encoding="utf-8") as f:
+            return {(t["task"], t["trial"]): t["passed"] for t in json.load(f)["trials"]}
+
+    a, b = load(path_a), load(path_b)
+    keys = sorted(a.keys() & b.keys())
+    if not keys:
+        sys.exit("两份结果没有共同的 (任务, 试验) 可以配对")
+    xa, xb = [a[k] for k in keys], [b[k] for k in keys]
+    for name, xs in (("A", xa), ("B", xb)):
+        p, lo, hi = ci95(sum(xs), len(xs))
+        print(f"{name}：{p:.0%}（95% 区间 {lo:.0%}–{hi:.0%}）")
+    r = mcnemar(xa, xb)
+    diff, lo, hi = paired_bootstrap([float(x) for x in xa], [float(x) for x in xb])
+    print(f"配对 {len(keys)} 次：B 对 A 错 {r.b_only}，A 对 B 错 {r.a_only}，McNemar p = {r.p_value:.3f}")
+    print(f"B - A = {diff:+.1%}（自助法 95% 区间 {lo:+.1%} 到 {hi:+.1%}）")
+    print("结论：" + ("差异显著" if r.p_value < 0.05 else "还分不出好坏，需要更多题或更多次试验"))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="python -m mini_agent")
     sub = parser.add_subparsers(dest="cmd", required=True)
@@ -121,11 +163,21 @@ def main() -> None:
     p.add_argument("--coding", action="store_true", help="加上 glob、grep、bash，作为 Coding Agent 使用（5.2 课）")
     m = sub.add_parser("mcp", help="以 MCP 服务器（stdio）暴露工具")
     m.add_argument("--workspace", default="workspace")
+    e = sub.add_parser("eval", help="用真实模型跑内置评估集")
+    e.add_argument("--trials", type=int, default=3, help="每个任务跑几次（默认 3）")
+    e.add_argument("--save", help="把每次试验的结果写入 JSON 文件")
+    c = sub.add_parser("compare", help="配对比较两次 eval 的结果")
+    c.add_argument("a")
+    c.add_argument("b")
     args = parser.parse_args()
     if args.cmd == "demo":
         demo()
     elif args.cmd == "mcp":
         mcp(args.workspace)
+    elif args.cmd == "eval":
+        evaluate(args.trials, args.save)
+    elif args.cmd == "compare":
+        compare(args.a, args.b)
     else:
         chat(args.workspace, args.memory, args.coding)
 
