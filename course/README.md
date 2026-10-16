@@ -35,7 +35,7 @@
 | [0 开学](00-start/README.md) | 引言 | ✅ 可学 |
 | [1 Agent 入门](01-intro/README.md) | 第一章 | ✅ 可学 |
 | [2 上下文工程](02-context/README.md) | 第二章 | ✅ 可学 |
-| [3 用户记忆和知识库](03-memory/README.md) | 第三章 | 大纲 |
+| [3 用户记忆和知识库](03-memory/README.md) | 第三章 | ✅ 可学 |
 | [4 工具](04-tools/README.md) | 第四章 | 大纲 |
 | [5 Coding Agent](05-coding-agent/README.md) | 第五章 | 大纲 |
 | [6 交互](06-interaction/README.md) | 第六章 | 大纲 |

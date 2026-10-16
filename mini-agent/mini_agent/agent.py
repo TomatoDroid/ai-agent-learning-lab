@@ -1,7 +1,7 @@
 """把各课的零件装配成一个 Agent。（本文件无练习；随课程推进，这里会接入更多能力。）
 
 装配顺序就是第二章的上下文布局：
-  [system：系统提示词 + Skill 目录] [tools] [轨迹……] [状态栏（追加）]
+  [system：系统提示词 + 用户记忆 + Skill 目录] [tools] [轨迹……] [状态栏（追加）]
 每次调用模型前，before_call 依次：记录工具调用 → 追加已激活的 Skill 正文 → 必要时压缩 → 追加状态栏。
 """
 from __future__ import annotations
@@ -14,6 +14,7 @@ from .compress import compress_if_needed
 from .guard import Guard
 from .injection import wrap_external
 from .loop import AgentResult, run_agent
+from .memory import MemoryStore
 from .skills import activation_message, catalog_text, load_skills
 from .status import StatusTracker
 from .tools import Tool, ToolRegistry
@@ -33,6 +34,7 @@ class Agent:
         budget: int | None = None,
         summarize: Callable[[str], str] | None = None,
         wrap_untrusted: bool = True,
+        memory: MemoryStore | None = None,
         max_iterations: int = 20,
     ):
         self.llm = llm
@@ -56,6 +58,10 @@ class Agent:
         # 2.4：Skill 目录放进系统提示词（静态前缀），正文由 load_skill 按需追加
         self.skills = load_skills(skills_dir) if skills_dir else {}
         self.system_prompt = system_prompt
+        # 3.1：用户记忆在会话开始时渲染一次，整个会话内不变，属于静态前缀
+        self.memory = memory
+        if memory is not None and memory.render():
+            self.system_prompt += "\n\n" + memory.render()
         if self.skills:
             self.system_prompt += "\n\n" + catalog_text(self.skills)
             self.registry.register(Tool(
