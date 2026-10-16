@@ -14,10 +14,12 @@ from datetime import datetime
 from . import llm as L
 from .agent import Agent
 from .builtin import add_clock, add_workspace, basic_registry
+from .coding import add_coding_tools
 from .guard import Guard
 from .mcp import McpServer, serve_stdio
 from .memory import MemoryStore, extract_memories
 from .messages import ToolCall, tool_calls_of
+from .recovery import ApiError, RetryingLLM, classify
 from .status import StatusTracker
 
 
@@ -54,16 +56,23 @@ def demo() -> None:
     print("每次调用模型时读入的消息条数：", [len(c["messages"]) for c in model.calls])
 
 
-def chat(workspace: str, memory_path: str | None = None) -> None:
+def chat(workspace: str, memory_path: str | None = None, coding: bool = False) -> None:
     reg = basic_registry()
     add_clock(reg)
     root = add_workspace(reg, workspace)
+    if coding:
+        add_coding_tools(reg, root)  # 5.2：glob、grep、bash，凑齐 Coding Agent 的核心工具
 
     def confirm(call: ToolCall, risk: str) -> bool:
         answer = input(f"\n⚠ 高风险操作 {call.name}({call.arguments})，允许吗？[y/N] ")
         return answer.strip().lower() == "y"
 
     llm = L.OpenAICompatLLM.from_env()
+    try:
+        classify(ApiError(429))
+        llm = RetryingLLM(llm)  # 5.1：限流、过载静默重试；还没做练习 5.1a 时跳过
+    except NotImplementedError:
+        pass
     store = MemoryStore.load(memory_path) if memory_path else None
     agent = Agent(llm, reg,
                   f"你是一个助手，可以在工作目录 {root} 中读写文件。需要真实数据时调用工具。",
@@ -109,6 +118,7 @@ def main() -> None:
     p = sub.add_parser("chat", help="接入真实模型对话")
     p.add_argument("--workspace", default="workspace")
     p.add_argument("--memory", help="用户记忆文件（JSON Lines），会话结束时追加新记忆")
+    p.add_argument("--coding", action="store_true", help="加上 glob、grep、bash，作为 Coding Agent 使用（5.2 课）")
     m = sub.add_parser("mcp", help="以 MCP 服务器（stdio）暴露工具")
     m.add_argument("--workspace", default="workspace")
     args = parser.parse_args()
@@ -117,7 +127,7 @@ def main() -> None:
     elif args.cmd == "mcp":
         mcp(args.workspace)
     else:
-        chat(args.workspace, args.memory)
+        chat(args.workspace, args.memory, args.coding)
 
 
 if __name__ == "__main__":

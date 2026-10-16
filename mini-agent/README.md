@@ -44,8 +44,11 @@ python -m pytest -q               # 一开始全部失败：每个失败都是�
 | [4.1](../course/04-tools/4.1-tool-design.md) | `tooldesign.py` | 4.1a/b/c：工具描述检查、参数校验、忠实的编辑工具 | `pytest tests/test_ch04_tooldesign.py` |
 | [4.2](../course/04-tools/4.2-mcp-and-discovery.md) | `mcp.py`、`discovery.py` | 4.2a/b/c：MCP 服务器、第三方服务器审计、工具搜索 | `pytest tests/test_ch04_mcp.py` |
 | [4.3](../course/04-tools/4.3-perception-execution-collab.md) | `execution.py` | 4.3a/b/c：显式截断、Sidecar 门控、先查询再重试 | `pytest tests/test_ch04_execution.py` |
+| [5.1](../course/05-coding-agent/5.1-flow-and-recovery.md) | `recovery.py` | 5.1a/b/c：错误分类与退避、重复调用指纹、轨迹修复与跨厂商接管 | `pytest tests/test_ch05_recovery.py` |
+| [5.2](../course/05-coding-agent/5.2-search-edit-security.md) | `coding.py` | 5.2a/b/c：grep、命令语义解析、首尾匹配编辑；里程碑 A | `pytest tests/test_ch05_coding.py` |
+| [5.3](../course/05-coding-agent/5.3-code-as-meta-capability.md) | `meta.py` | 5.3a/b/c：约束求解、服务端真值守门、声明式表单 | `pytest tests/test_ch05_meta.py` |
 
-后续模块（Coding Agent、交互、评估……）会继续往这里加文件。
+后续模块（交互、评估……）会继续往这里加文件。
 
 ## 离线演示
 
@@ -69,6 +72,7 @@ python -m mini_agent chat --workspace ./workspace
 
 `chat` 模式会装配你写好的全部零件：工作目录内的文件工具、护栏（高风险操作在终端里问你）、状态栏和压缩，以及参数校验（4.1 课）。
 加上 `--memory memory.jsonl` 后，会话开始时载入用户记忆，退出时提炼新记忆并追加写回（3.1 课）。
+加上 `--coding` 后，多出 glob、grep、bash 三个工具，可以当 Coding Agent 用（5.2 课）；做完练习 5.1a 后，限流和过载会被静默重试。bash 只是子进程，不是沙盒，只在你信任的项目上用。
 
 ```sh
 python -m mini_agent mcp --workspace ./workspace
