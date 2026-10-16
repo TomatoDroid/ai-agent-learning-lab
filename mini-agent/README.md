@@ -47,6 +47,9 @@ python -m pytest -q               # 一开始全部失败：每个失败都是�
 | [5.1](../course/05-coding-agent/5.1-flow-and-recovery.md) | `recovery.py` | 5.1a/b/c：错误分类与退避、重复调用指纹、轨迹修复与跨厂商接管 | `pytest tests/test_ch05_recovery.py` |
 | [5.2](../course/05-coding-agent/5.2-search-edit-security.md) | `coding.py` | 5.2a/b/c：grep、命令语义解析、首尾匹配编辑；里程碑 A | `pytest tests/test_ch05_coding.py` |
 | [5.3](../course/05-coding-agent/5.3-code-as-meta-capability.md) | `meta.py` | 5.3a/b/c：约束求解、服务端真值守门、声明式表单 | `pytest tests/test_ch05_meta.py` |
+| [6.1](../course/06-interaction/6.1-async-events.md) | `events.py` | 6.1a/b/c：事件路由、批量事件标记、打断占位符（`EventLoopAgent` 已提供） | `pytest tests/test_ch06_events.py` |
+| [6.2](../course/06-interaction/6.2-voice.md) | `voice.py` | 6.2a/b/c：流式分段、首音延迟、快慢思考方案二 | `pytest tests/test_ch06_voice.py` |
+| [6.3](../course/06-interaction/6.3-computer-use-robotics.md) | `gui.py` | 6.3a/b/c：坐标双向缩放、结构化元素索引、机器人逐步检查闭环 | `pytest tests/test_ch06_gui.py` |
 
 后续模块（交互、评估……）会继续往这里加文件。
 

@@ -58,9 +58,9 @@
     {
       "id": "06", "part": "第一部分 · 构建", "title": "模块 6 · 交互", "page": "course/06-interaction/README.md",
       "lessons": [
-        { "id": "6.1", "title": "异步与事件驱动", "status": "outline" },
-        { "id": "6.2", "title": "语音交互", "status": "outline" },
-        { "id": "6.3", "title": "Computer Use 与机器人", "status": "outline" }
+        { "id": "6.1", "title": "异步与事件驱动", "file": "course/06-interaction/6.1-async-events.md", "minutes": 110, "status": "ready" },
+        { "id": "6.2", "title": "语音：最自然的人机接口", "file": "course/06-interaction/6.2-voice.md", "minutes": 90, "status": "ready" },
+        { "id": "6.3", "title": "Computer Use 与机器人", "file": "course/06-interaction/6.3-computer-use-robotics.md", "minutes": 110, "status": "ready" }
       ]
     },
     {
