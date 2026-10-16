@@ -50,9 +50,9 @@
     {
       "id": "05", "part": "第一部分 · 构建", "title": "模块 5 · Coding Agent", "page": "course/05-coding-agent/README.md",
       "lessons": [
-        { "id": "5.1", "title": "Coding Agent 的流程与错误恢复", "status": "outline" },
-        { "id": "5.2", "title": "搜索、编辑与安全", "status": "outline" },
-        { "id": "5.3", "title": "代码：通用 Agent 的元能力", "status": "outline" }
+        { "id": "5.1", "title": "Coding Agent 的流程与错误恢复", "file": "course/05-coding-agent/5.1-flow-and-recovery.md", "minutes": 100, "status": "ready" },
+        { "id": "5.2", "title": "搜索、编辑与安全", "file": "course/05-coding-agent/5.2-search-edit-security.md", "minutes": 110, "status": "ready" },
+        { "id": "5.3", "title": "代码：通用 Agent 的元能力", "file": "course/05-coding-agent/5.3-code-as-meta-capability.md", "minutes": 110, "status": "ready" }
       ]
     },
     {

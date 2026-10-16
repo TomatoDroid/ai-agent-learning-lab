@@ -37,7 +37,7 @@
 | [2 上下文工程](02-context/README.md) | 第二章 | ✅ 可学 |
 | [3 用户记忆和知识库](03-memory/README.md) | 第三章 | ✅ 可学 |
 | [4 工具](04-tools/README.md) | 第四章 | ✅ 可学 |
-| [5 Coding Agent](05-coding-agent/README.md) | 第五章 | 大纲 |
+| [5 Coding Agent](05-coding-agent/README.md) | 第五章 | ✅ 可学 |
 | [6 交互](06-interaction/README.md) | 第六章 | 大纲 |
 | [7 评估](07-evaluation/README.md) | 第七章 | 大纲 |
 | [8 模型后训练](08-post-training/README.md) | 第八章 | 大纲 |
